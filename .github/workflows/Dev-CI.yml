@@ -33,8 +33,6 @@ jobs:
         run: chmod +x mvnw
           
       - name: Build with Maven
-        env:
-          SPRING_PROFILES_ACTIVE: test
         run: ./mvnw --no-transfer-progress clean verify
  
   
