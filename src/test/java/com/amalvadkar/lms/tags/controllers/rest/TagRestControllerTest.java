@@ -15,13 +15,14 @@ import java.util.Optional;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Sql("/scripts/tags/tag-test-data.sql")
+
 class TagRestControllerTest extends AbstractIT {
 
     @Autowired
     TagRepo tagRepo;
 
     @Test
+    @Sql("/scripts/tags/tag-test-data.sql")
     void should_create_new_tag() throws IOException {
         String requestPayload = """
                 {
@@ -64,6 +65,7 @@ class TagRestControllerTest extends AbstractIT {
     }
 
     @Test
+    @Sql("/scripts/tags/tag-test-data.sql")
     void should_send_error_message_that_tag_already_exists_if_same_name_tag_created() throws IOException {
         String requestPayload = """
                 {
@@ -97,6 +99,7 @@ class TagRestControllerTest extends AbstractIT {
     }
 
     @Test
+    @Sql("/scripts/tags/tag-test-data.sql")
     void should_soft_delete_tag()  {
         String requestPayload = """
                 {
