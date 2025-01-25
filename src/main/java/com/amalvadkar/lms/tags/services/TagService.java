@@ -1,12 +1,15 @@
 package com.amalvadkar.lms.tags.services;
 
+import com.amalvadkar.lms.common.exceptions.ResourceAlreadyExistsException;
 import com.amalvadkar.lms.common.models.response.CustomResModel;
 import com.amalvadkar.lms.common.repositories.UserRepo;
 import com.amalvadkar.lms.tags.entities.TagEntity;
 import com.amalvadkar.lms.tags.models.request.CreateTagRequest;
+import com.amalvadkar.lms.tags.models.request.DeleteTagRequest;
 import com.amalvadkar.lms.tags.repositories.TagRepo;
 import com.amalvadkar.lms.tags.transformer.TagTransformer;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +18,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class TagService {
 
     private final TagRepo tagRepo;
@@ -24,6 +28,11 @@ public class TagService {
     public CustomResModel createTag(CreateTagRequest createTagRequest, String loggedInUserId) {
         String incomingTagName = createTagRequest.tagName();
         String dashedTagName = TagTransformer.transformTag(incomingTagName);
+
+        boolean isTagExists = tagRepo.existsByNameAndDeleteFlagIsFalse(dashedTagName);
+        if (isTagExists){
+            throw new ResourceAlreadyExistsException("Tag already exists");
+        }
 
         TagEntity tagEntity = new TagEntity();
         tagEntity.setName(dashedTagName);
@@ -38,4 +47,10 @@ public class TagService {
         );
     }
 
+    @Transactional
+    public CustomResModel deleteTag(DeleteTagRequest deleteTagRequest, String loggedInUserId) {
+        int noOfTagsDeleted = tagRepo.deleteTagById(deleteTagRequest.tagId(), loggedInUserId);
+        log.info("No of tags deleted :: {}", noOfTagsDeleted);
+        return CustomResModel.deleted("Deleted successfully");
+    }
 }

@@ -24,12 +24,28 @@ public class CustomResModel {
                 .build();
     }
 
+    public static CustomResModel fail(String message , HttpStatus httpStatus) {
+        return builder()
+                .success(false)
+                .message(message)
+                .code(httpStatus.value())
+                .build();
+    }
+
     public static CustomResModel created(Object data, String message) {
         return builder()
                 .data(data)
                 .success(true)
                 .message(message)
                 .code(HttpStatus.CREATED.value())
+                .build();
+    }
+
+    public static CustomResModel deleted(String message) {
+        return builder()
+                .success(true)
+                .message(message)
+                .code(HttpStatus.NO_CONTENT.value())
                 .build();
     }
 

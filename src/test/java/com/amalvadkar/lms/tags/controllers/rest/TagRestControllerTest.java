@@ -7,12 +7,15 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Sql("/scripts/tags/tag-test-data.sql")
 class TagRestControllerTest extends AbstractIT {
 
     @Autowired
@@ -22,7 +25,7 @@ class TagRestControllerTest extends AbstractIT {
     void should_create_new_tag() throws IOException {
         String requestPayload = """
                 {
-                    "tagName" : "Spring Boot"
+                    "tagName" : "Spring Data Jpa"
                 }
                 """;
 
@@ -51,12 +54,89 @@ class TagRestControllerTest extends AbstractIT {
         TagEntity newCreatedTagEntity = tagRepo.findById(newCreatedTagId).orElseThrow();
 
         assertThat(newCreatedTagEntity.getId()).isEqualTo(newCreatedTagId);
-        assertThat(newCreatedTagEntity.getName()).isEqualTo("spring-boot");
+        assertThat(newCreatedTagEntity.getName()).isEqualTo("spring-data-jpa");
         assertThat(newCreatedTagEntity.getDeleteFlag()).isFalse();
         assertThat(newCreatedTagEntity.getCreatedBy().getId()).isEqualTo("01JHCWNZ8TJT54N2XW130WDS8K");
         assertThat(newCreatedTagEntity.getUpdatedBy().getId()).isEqualTo("01JHCWNZ8TJT54N2XW130WDS8K");
         assertThat(newCreatedTagEntity.getCreatedOn()).isNotNull();
         assertThat(newCreatedTagEntity.getUpdatedOn()).isNotNull();
+
+    }
+
+    @Test
+    void should_send_error_message_that_tag_already_exists_if_same_name_tag_created() throws IOException {
+        String requestPayload = """
+                {
+                    "tagName" : "Spring Boot"
+                }
+                """;
+
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .header("X-User-Id", "01JHCWNZ8TJT54N2XW130WDS8K")
+                .header("X-Role-Id", "01JHCWEFS3D4YMWYGRAMX8FZT1")
+                .header("X-Device", "web")
+                .body(requestPayload)
+                .when()
+                .post("/api/lms/tags/create-tag")
+                .then()
+                .extract()
+                .response();
+
+        boolean success = response.path("success");
+        assertThat(success).isFalse();
+
+        String message = response.path("message");
+        assertThat(message).isEqualTo("Tag already exists");
+
+        int code = response.path("code");
+        assertThat(code).isEqualTo(409);
+
+        Object data = response.path("data");
+        assertThat(data).isNull();
+    }
+
+    @Test
+    void should_soft_delete_tag()  {
+        String requestPayload = """
+                {
+                    "tagId" : "01JJEBSXC40CSH697GCJ4MQRYP"
+                }
+                """;
+
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .header("X-User-Id", "01JJERFS2ZW49TYVHFX2QN8KZC")
+                .header("X-Role-Id", "01JHCWEFS3D4YMWYGRAMX8FZT1")
+                .header("X-Device", "web")
+                .body(requestPayload)
+                .when()
+                .post("/api/lms/tags/delete-tag")
+                .then()
+                .extract()
+                .response();
+
+        boolean success = response.path("success");
+        assertThat(success).isTrue();
+
+        String message = response.path("message");
+        assertThat(message).isEqualTo("Deleted successfully");
+
+        int code = response.path("code");
+        assertThat(code).isEqualTo(204);
+
+        Object data = response.path("data");
+        assertThat(data).isNull();
+
+        Optional<TagEntity> tagOpt = tagRepo.findTagWithUser("01JJEBSXC40CSH697GCJ4MQRYP");
+
+         assertThat(tagOpt.get().getDeleteFlag()).isTrue();
+         assertThat(tagOpt.get().getCreatedOn())
+                 .isNotEqualTo(tagOpt.get().getUpdatedOn());
+         assertThat(tagOpt.get().getCreatedBy())
+                 .isNotEqualTo(tagOpt.get().getUpdatedBy());
+         assertThat(tagOpt.get().getUpdatedBy().getId()).isEqualTo("01JJERFS2ZW49TYVHFX2QN8KZC");
+
 
     }
 }
