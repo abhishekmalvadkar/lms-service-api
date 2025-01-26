@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 class ApplicationTests extends AbstractIT {
 
 	@Test
-	void contextLoads() {
+	void should_load_context() {
 	}
 
 }

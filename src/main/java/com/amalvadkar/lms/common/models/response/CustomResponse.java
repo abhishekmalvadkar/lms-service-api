@@ -8,14 +8,14 @@ import org.springframework.http.HttpStatus;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 @Getter
-public class CustomResModel {
+public class CustomResponse {
 
     private Object data;
     private String message;
     private Boolean success;
     private Integer code;
 
-    public static CustomResModel success(Object data, String message) {
+    public static CustomResponse success(Object data, String message) {
         return builder()
                 .data(data)
                 .success(true)
@@ -24,7 +24,7 @@ public class CustomResModel {
                 .build();
     }
 
-    public static CustomResModel fail(String message , HttpStatus httpStatus) {
+    public static CustomResponse fail(String message , HttpStatus httpStatus) {
         return builder()
                 .success(false)
                 .message(message)
@@ -32,7 +32,7 @@ public class CustomResModel {
                 .build();
     }
 
-    public static CustomResModel created(Object data, String message) {
+    public static CustomResponse created(Object data, String message) {
         return builder()
                 .data(data)
                 .success(true)
@@ -41,7 +41,7 @@ public class CustomResModel {
                 .build();
     }
 
-    public static CustomResModel deleted(String message) {
+    public static CustomResponse deleted(String message) {
         return builder()
                 .success(true)
                 .message(message)

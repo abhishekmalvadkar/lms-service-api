@@ -14,11 +14,12 @@ public interface TagRepo extends JpaRepository<TagEntity, String> {
 
     @Modifying
     @Query(value = """
-            UPDATE tags as t SET t.delete_flag = true,
-            t.updated_on = UTC_TIMESTAMP(),
+            update tags as t set t.delete_flag = true,
+            t.updated_on = utc_timestamp(),
             t.updated_by = :loggedInUserId
-            WHERE t.id = :id""",nativeQuery = true)
-    int deleteTagById(@Param("id") String id, @Param("loggedInUserId") String loggedInUserId);
+            where t.id = :tagId
+            """, nativeQuery = true)
+    int deleteTagById(@Param("tagId") String tagId, @Param("loggedInUserId") String loggedInUserId);
 
     @Query("""
             select t from TagEntity t

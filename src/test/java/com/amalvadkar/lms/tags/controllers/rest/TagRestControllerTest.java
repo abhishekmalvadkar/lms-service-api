@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.io.IOException;
 import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
@@ -23,7 +22,7 @@ class TagRestControllerTest extends AbstractIT {
     TagRepo tagRepo;
 
     @Test
-    void should_create_new_tag() throws IOException {
+    void should_create_new_tag() {
         String requestPayload = """
                 {
                     "tagName" : "Spring Data Jpa"
@@ -65,7 +64,7 @@ class TagRestControllerTest extends AbstractIT {
     }
 
     @Test
-    void should_send_error_message_that_tag_already_exists_if_same_name_tag_created() throws IOException {
+    void should_send_error_message_that_tag_already_exists_if_same_name_tag_created() {
         String requestPayload = """
                 {
                     "tagName" : "Spring Boot"
