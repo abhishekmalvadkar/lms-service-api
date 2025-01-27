@@ -15,10 +15,7 @@ import com.amalvadkar.lms.tags.transformer.TagTransformer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,12 +81,8 @@ public class TagService {
     }
 
     private Page<TagEntity> fetchPagedTagEntity(FetchTagsRequest fetchTagsRequest, String loggedInUserId) {
-        Sort sortBy = Sort.by("updatedOn").descending();
-        int pageNo = fetchTagsRequest.pageNO() <= 1 ? 0 : fetchTagsRequest.pageNO() - 1;
-        Pageable pageable = PageRequest.of(pageNo, 2, sortBy);
-        Specification<TagEntity> spec = Specification.where(TagSpecification.hasCategory(fetchTagsRequest.searchText()))
-                .and(TagSpecification.withCreatedBy(loggedInUserId));
-        return tagRepo.findAll(spec, pageable);
+        Pageable pageable = fetchTagsRequest.preparePageRequest();
+        return tagRepo.findAll(TagSpecification.getTags(fetchTagsRequest, loggedInUserId), pageable);
     }
 
     private static PagedResult<FetchTagResponse> preparePageResultFetchTagResponse(Page<TagEntity> pagedTagEntity) {

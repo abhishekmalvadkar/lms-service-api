@@ -1,19 +1,34 @@
 package com.amalvadkar.lms.tags.specification;
 
 import com.amalvadkar.lms.tags.entities.TagEntity;
+import com.amalvadkar.lms.tags.models.request.FetchTagsRequest;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TagSpecification {
 
-    public static Specification<TagEntity> hasCategory(String searchText) {
-        return (root, query, criteriaBuilder) ->
-              searchText==null ? null :  criteriaBuilder.like(root.get("name"), "%" + searchText + "%");
+    private static final String NAME = "name";
+    private static final String CREATED_BY = "createdBy";
+    private static final String DELETE_FLAG = "deleteFlag";
+    private static final String ID = "id";
 
-    }
+    public static Specification<TagEntity> getTags(FetchTagsRequest fetchTagsRequest , String loggedInUserId){
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
 
-    public static Specification<TagEntity> withCreatedBy(String userId){
-          return (root, query, criteriaBuilder) ->
-                  userId==null ? null :  criteriaBuilder.equal(root.get("createdBy").get("id"), userId);
+            if (StringUtils.hasText(fetchTagsRequest.getSearchText())){
+                predicates.add(criteriaBuilder.like(root.get(NAME), "%" + fetchTagsRequest.getSearchText() + "%"));
+            }
+
+            predicates.add(criteriaBuilder.equal(root.get(CREATED_BY).get(ID), loggedInUserId));
+            predicates.add(criteriaBuilder.equal(root.get(DELETE_FLAG) , false));
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
     }
 
 }
