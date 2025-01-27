@@ -3,6 +3,7 @@ package com.amalvadkar.lms.tags.controllers.rest;
 import com.amalvadkar.lms.common.models.response.CustomResponse;
 import com.amalvadkar.lms.tags.models.request.CreateTagRequest;
 import com.amalvadkar.lms.tags.models.request.DeleteTagRequest;
+import com.amalvadkar.lms.tags.models.request.FetchTagsRequest;
 import com.amalvadkar.lms.tags.services.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,12 @@ public class TagRestController {
     public ResponseEntity<CustomResponse> deleteTag(@RequestBody DeleteTagRequest deleteTagRequest,
                                                      @RequestHeader(REQUEST_HEADER_USER_ID) String loggedInUserId){
       return ResponseEntity.ok(this.tagService.deleteTag(deleteTagRequest, loggedInUserId));
+    }
+
+    @PostMapping("fetch-tags")
+    public ResponseEntity<CustomResponse> fetchTags(@RequestBody FetchTagsRequest fetchTagsRequest,
+                                                    @RequestHeader(REQUEST_HEADER_USER_ID) String loggedInUserId){
+        return ResponseEntity.ok(this.tagService.fetchTags(fetchTagsRequest, loggedInUserId));
     }
 
 }

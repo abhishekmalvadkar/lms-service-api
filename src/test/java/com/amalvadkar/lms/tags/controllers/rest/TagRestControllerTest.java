@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.List;
 import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
@@ -73,7 +74,7 @@ class TagRestControllerTest extends AbstractIT {
 
         Response response = given()
                 .contentType(ContentType.JSON)
-                .header("X-User-Id", "01JHCWNZ8TJT54N2XW130WDS8K")
+                .header("X-User-Id", "01JJERFS2Z4EV7XNVKSG6X83N4")
                 .header("X-Role-Id", "01JHCWEFS3D4YMWYGRAMX8FZT1")
                 .header("X-Device", "web")
                 .body(requestPayload)
@@ -135,4 +136,98 @@ class TagRestControllerTest extends AbstractIT {
                  .isNotEqualTo(tagOpt.get().getUpdatedBy());
          assertThat(tagOpt.get().getUpdatedBy().getId()).isEqualTo("01JJERFS2ZW49TYVHFX2QN8KZC");
     }
+
+    @Test
+    void should_fetch_tags_with_searchText()  {
+            String requestPayload = """
+                    {
+                        "searchText" :"spr",
+                        "pageNo":1
+                    }
+                    """;
+
+            Response response = given()
+                    .contentType(ContentType.JSON)
+                    .header("X-User-Id", "01JJERFS2Z4EV7XNVKSG6X83N4")
+                    .header("X-Role-Id", "01JHCWEFS3D4YMWYGRAMX8FZT1")
+                    .header("X-Device", "web")
+                    .body(requestPayload)
+                    .when()
+                    .post("/api/lms/tags/fetch-tags")
+                    .then()
+                    .extract()
+                    .response();
+
+
+            boolean success = response.path("success"); //
+            assertThat(success).isTrue();
+
+            String message = response.path("message");
+            assertThat(message).isEqualTo("Fetched successfully");
+
+            int code = response.path("code");
+            assertThat(code).isEqualTo(200);
+
+        Integer totalElement =  response.path("data.totalElements");
+        assertThat(totalElement).isEqualTo(2);
+
+
+        List<Object> tags = response.path("data.content");
+        assertThat(tags).isNotEmpty();
+        String tagId = response.path("data.content[0].tagId");
+        assertThat(tagId).isEqualTo("01JJH4PD957CFG2XZEHH6PFGV3");
+
+        String tagName = response.path("data.content[0].tagName");
+        assertThat(tagName).isEqualTo("spring-cloud");
+
+
+
+    }
+    @Test
+    void should_fetch_tags()  {
+        String requestPayload = """
+                    {
+                        "pageNo":1
+                    }
+                    """;
+
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .header("X-User-Id", "01JJERFS2Z4EV7XNVKSG6X83N4")
+                .header("X-Role-Id", "01JHCWEFS3D4YMWYGRAMX8FZT1")
+                .header("X-Device", "web")
+                .body(requestPayload)
+                .when()
+                .post("/api/lms/tags/fetch-tags")
+                .then()
+                .extract()
+                .response();
+
+
+        boolean success = response.path("success"); //
+        assertThat(success).isTrue();
+
+        String message = response.path("message");
+        assertThat(message).isEqualTo("Fetched successfully");
+
+        int code = response.path("code");
+        assertThat(code).isEqualTo(200);
+
+        Integer totalElement =  response.path("data.totalElements");
+        assertThat(totalElement).isEqualTo(5);
+
+
+        List<Object> tags = response.path("data.content");
+        assertThat(tags).isNotEmpty();
+        String tagId = response.path("data.content[0].tagId");
+        assertThat(tagId).isEqualTo("01JJH0YBKJXK6MNK9G5440XG4J");
+
+        String tagName = response.path("data.content[0].tagName");
+        assertThat(tagName).isEqualTo("maven");
+
+
+
+    }
+
+
 }

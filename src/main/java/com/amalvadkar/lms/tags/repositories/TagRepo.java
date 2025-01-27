@@ -2,13 +2,14 @@ package com.amalvadkar.lms.tags.repositories;
 
 import com.amalvadkar.lms.tags.entities.TagEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface TagRepo extends JpaRepository<TagEntity, String> {
+public interface TagRepo extends JpaRepository<TagEntity, String> , JpaSpecificationExecutor<TagEntity> {
 
     boolean existsByNameAndDeleteFlagIsFalse(String name);
 
