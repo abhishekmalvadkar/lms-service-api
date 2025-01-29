@@ -2,6 +2,7 @@ package com.amalvadkar.lms.tags.specification;
 
 import com.amalvadkar.lms.tags.entities.TagEntity;
 import com.amalvadkar.lms.tags.models.request.FetchTagsRequest;
+import com.amalvadkar.lms.tags.transformer.TagTransformer;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
@@ -21,7 +22,7 @@ public class TagSpecification {
             List<Predicate> predicates = new ArrayList<>();
 
             if (StringUtils.hasText(fetchTagsRequest.getSearchText())){
-                predicates.add(criteriaBuilder.like(root.get(NAME), "%" + fetchTagsRequest.getSearchText() + "%"));
+                predicates.add(criteriaBuilder.like(root.get(NAME), "%" + TagTransformer.transformTag(fetchTagsRequest.getSearchText()) + "%"));
             }
 
             predicates.add(criteriaBuilder.equal(root.get(CREATED_BY).get(ID), loggedInUserId));

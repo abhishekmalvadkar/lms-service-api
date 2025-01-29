@@ -98,7 +98,7 @@ class TagRestControllerTest extends AbstractIT {
     }
 
     @Test
-    void should_soft_delete_tag()  {
+    void should_soft_delete_tag() {
         String requestPayload = """
                 {
                     "tagId" : "01JJEBSXC40CSH697GCJ4MQRYP"
@@ -131,65 +131,20 @@ class TagRestControllerTest extends AbstractIT {
 
         Optional<TagEntity> tagOpt = tagRepo.findTagWithUser("01JJEBSXC40CSH697GCJ4MQRYP");
 
-         assertThat(tagOpt.get().getDeleteFlag()).isTrue();
-         assertThat(tagOpt.get().getCreatedBy())
-                 .isNotEqualTo(tagOpt.get().getUpdatedBy());
-         assertThat(tagOpt.get().getUpdatedBy().getId()).isEqualTo("01JJERFS2ZW49TYVHFX2QN8KZC");
+        assertThat(tagOpt.get().getDeleteFlag()).isTrue();
+        assertThat(tagOpt.get().getCreatedBy())
+                .isNotEqualTo(tagOpt.get().getUpdatedBy());
+        assertThat(tagOpt.get().getUpdatedBy().getId()).isEqualTo("01JJERFS2ZW49TYVHFX2QN8KZC");
     }
 
     @Test
-    void should_fetch_tags_with_searchText()  {
-            String requestPayload = """
-                    {
-                        "searchText" :"spr",
-                        "pageNo":1
-                    }
-                    """;
-
-            Response response = given()
-                    .contentType(ContentType.JSON)
-                    .header("X-User-Id", "01JJERFS2Z4EV7XNVKSG6X83N4")
-                    .header("X-Role-Id", "01JHCWEFS3D4YMWYGRAMX8FZT1")
-                    .header("X-Device", "web")
-                    .body(requestPayload)
-                    .when()
-                    .post("/api/lms/tags/fetch-tags")
-                    .then()
-                    .extract()
-                    .response();
-
-
-            boolean success = response.path("success"); //
-            assertThat(success).isTrue();
-
-            String message = response.path("message");
-            assertThat(message).isEqualTo("Fetched successfully");
-
-            int code = response.path("code");
-            assertThat(code).isEqualTo(200);
-
-        Integer totalElement =  response.path("data.totalElements");
-        assertThat(totalElement).isEqualTo(2);
-
-
-        List<Object> tags = response.path("data.content");
-        assertThat(tags).isNotEmpty();
-        String tagId = response.path("data.content[0].tagId");
-        assertThat(tagId).isEqualTo("01JJH4PD957CFG2XZEHH6PFGV3");
-
-        String tagName = response.path("data.content[0].tagName");
-        assertThat(tagName).isEqualTo("spring-cloud");
-
-
-
-    }
-    @Test
-    void should_fetch_tags()  {
+    void should_fetch_tags_with_searchText() {
         String requestPayload = """
-                    {
-                        "pageNo":1
-                    }
-                    """;
+                {
+                    "searchText" :"spr",
+                    "pageNo":1
+                }
+                """;
 
         Response response = given()
                 .contentType(ContentType.JSON)
@@ -204,7 +159,7 @@ class TagRestControllerTest extends AbstractIT {
                 .response();
 
 
-        boolean success = response.path("success"); //
+        boolean success = response.path("success");
         assertThat(success).isTrue();
 
         String message = response.path("message");
@@ -213,9 +168,95 @@ class TagRestControllerTest extends AbstractIT {
         int code = response.path("code");
         assertThat(code).isEqualTo(200);
 
-        Integer totalElement =  response.path("data.totalElements");
-        assertThat(totalElement).isEqualTo(5);
+        Integer totalElement = response.path("data.totalElements");
+        assertThat(totalElement).isEqualTo(2);
 
+
+        List<Object> tags = response.path("data.content");
+        assertThat(tags).isNotEmpty();
+        String tagId = response.path("data.content[0].tagId");
+        assertThat(tagId).isEqualTo("01JJH4PD957CFG2XZEHH6PFGV3");
+
+        String tagName = response.path("data.content[0].tagName");
+        assertThat(tagName).isEqualTo("spring-cloud");
+    }
+
+    @Test
+    void should_fetch_tags_with_search_text_and_space_between_word() {
+        String requestPayload = """
+                {
+                    "searchText":"spring boot" ,
+                    "pageNo":1
+                }
+                """;
+
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .header("X-User-Id", "01JJERFS2Z4EV7XNVKSG6X83N4")
+                .header("X-Role-Id", "01JHCWEFS3D4YMWYGRAMX8FZT1")
+                .header("X-Device", "web")
+                .body(requestPayload)
+                .when()
+                .post("/api/lms/tags/fetch-tags")
+                .then()
+                .extract()
+                .response();
+
+
+        boolean success = response.path("success");
+        assertThat(success).isTrue();
+
+        String message = response.path("message");
+        assertThat(message).isEqualTo("Fetched successfully");
+
+        int code = response.path("code");
+        assertThat(code).isEqualTo(200);
+
+        Integer totalElement = response.path("data.totalElements");
+        assertThat(totalElement).isEqualTo(1);
+
+
+        List<Object> tags = response.path("data.content");
+        assertThat(tags).isNotEmpty();
+
+        String tagName = response.path("data.content[0].tagName");
+        assertThat(tagName).isEqualTo("spring-boot");
+
+
+    }
+
+    @Test
+    void should_fetch_tags() {
+        String requestPayload = """
+                {
+                    "pageNo":1
+                }
+                """;
+
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .header("X-User-Id", "01JJERFS2Z4EV7XNVKSG6X83N4")
+                .header("X-Role-Id", "01JHCWEFS3D4YMWYGRAMX8FZT1")
+                .header("X-Device", "web")
+                .body(requestPayload)
+                .when()
+                .post("/api/lms/tags/fetch-tags")
+                .then()
+                .extract()
+                .response();
+
+
+        boolean success = response.path("success");
+        assertThat(success).isTrue();
+
+        String message = response.path("message");
+        assertThat(message).isEqualTo("Fetched successfully");
+
+        int code = response.path("code");
+        assertThat(code).isEqualTo(200);
+
+        Integer totalElement = response.path("data.totalElements");
+        assertThat(totalElement).isEqualTo(5);
 
         List<Object> tags = response.path("data.content");
         assertThat(tags).isNotEmpty();
@@ -224,10 +265,5 @@ class TagRestControllerTest extends AbstractIT {
 
         String tagName = response.path("data.content[0].tagName");
         assertThat(tagName).isEqualTo("maven");
-
-
-
     }
-
-
 }
