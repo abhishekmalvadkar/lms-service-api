@@ -7,7 +7,8 @@ public enum ResponseMessageEnum {
 
     CREATED_SUCCESSFULLY_MSG("Created Successfully"),
     DELETED_SUCCESSFULLY_MSG("Deleted successfully"),
-    FETCHED_SUCCESSFULLY_MSG("Fetched successfully");
+    FETCHED_SUCCESSFULLY_MSG("Fetched successfully"),
+    UPDATED_SUCCESSFULLY_MSG("Updated successfully");
 
     private final String value;
 

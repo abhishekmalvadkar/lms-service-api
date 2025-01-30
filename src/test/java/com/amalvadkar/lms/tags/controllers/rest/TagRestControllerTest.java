@@ -266,4 +266,40 @@ class TagRestControllerTest extends AbstractIT {
         String tagName = response.path("data.content[0].tagName");
         assertThat(tagName).isEqualTo("maven");
     }
+
+    @Test
+    void should_update_tag(){
+        String requestPayload = """
+                {
+                    "headerConfigId":"01JHCX6M68QF420CWFCCR4KTNZ",
+                    "value":"spring batch",
+                    "tagId":"01JJEBSXC40CSH697GCJ4MQRYP"
+                }
+                """;
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .header("X-User-Id", "01JJERFS2Z4EV7XNVKSG6X83N4")
+                .header("X-Role-Id", "01JHCWEFS3D4YMWYGRAMX8FZT1")
+                .header("X-Device", "web")
+                .body(requestPayload)
+                .when()
+                .patch("/api/lms/tags/update-tag")
+                .then()
+                .extract()
+                .response();
+
+        boolean success = response.path("success");
+        assertThat(success).isTrue();
+
+        String message = response.path("message");
+        assertThat(message).isEqualTo("Updated successfully");
+
+        int code = response.path("code");
+        assertThat(code).isEqualTo(200);
+
+        Optional<TagEntity> tagEntity = tagRepo.findById("01JJEBSXC40CSH697GCJ4MQRYP");
+
+        assertThat(tagEntity.get().getName()).isEqualTo("spring-batch");
+
+    }
 }

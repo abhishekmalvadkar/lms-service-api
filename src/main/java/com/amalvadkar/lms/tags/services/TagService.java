@@ -1,13 +1,17 @@
 package com.amalvadkar.lms.tags.services;
 
+import com.amalvadkar.lms.common.entities.HeaderConfigEntity;
 import com.amalvadkar.lms.common.exceptions.ResourceAlreadyExistsException;
 import com.amalvadkar.lms.common.models.response.CustomResponse;
 import com.amalvadkar.lms.common.models.response.PagedResult;
+import com.amalvadkar.lms.common.repositories.HeaderConfigRepo;
 import com.amalvadkar.lms.common.repositories.UserRepo;
+import com.amalvadkar.lms.tags.dao.TagDao;
 import com.amalvadkar.lms.tags.entities.TagEntity;
 import com.amalvadkar.lms.tags.models.request.CreateTagRequest;
 import com.amalvadkar.lms.tags.models.request.DeleteTagRequest;
 import com.amalvadkar.lms.tags.models.request.FetchTagsRequest;
+import com.amalvadkar.lms.tags.models.request.UpdateTagRequest;
 import com.amalvadkar.lms.tags.models.response.FetchTagResponse;
 import com.amalvadkar.lms.tags.repositories.TagRepo;
 import com.amalvadkar.lms.tags.specification.TagSpecification;
@@ -35,6 +39,8 @@ public class TagService {
 
     private final TagRepo tagRepo;
     private final UserRepo userRepo;
+    private final HeaderConfigRepo headerConfigRepo;
+    private final TagDao tagDao;
 
     @Transactional
     public CustomResponse createTag(CreateTagRequest createTagRequest, String loggedInUserId) {
@@ -94,5 +100,13 @@ public class TagService {
         return tagPage.getContent().stream()
                 .map(FetchTagResponse::new)
                 .toList();
+    }
+
+    @Transactional
+    public CustomResponse updateTag(UpdateTagRequest updateTagRequest, String loggedInUserId) {
+        HeaderConfigEntity headerConfigEntity = headerConfigRepo.fetchHeaderConfigById(updateTagRequest.headerConfigId());
+        String value = TagTransformer.transformTag(updateTagRequest.value());
+        return  tagDao.updateTag(headerConfigEntity.getHeaderName(),value,headerConfigEntity.getMappingTable(),loggedInUserId,updateTagRequest.tagId());
+
     }
 }
