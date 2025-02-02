@@ -55,18 +55,17 @@ class LinkRestControllerTest extends AbstractIT {
         LinkEntity createdLink = linkRepo.findLinkWithTagsWithUser(newCreatedLinkId,
                         "01JHCWNZ8TJT54N2XW130WDS8K").orElseThrow();
         assertThat(createdLink.getTitle()).isEqualTo("Spring Boot Guide");
-        assertThat(createdLink.getTags().size()).isEqualTo(2);
+        assertThat(createdLink.getTags()).hasSize(2);
     }
 
     @Test
-    void send_error_when_create_new_link_with_same_link() {
+    void send_link_already_exists_error_message_if_link_url_already_exists() {
 
         String requestPayload = """
                 {
-                
-                "title":"Spring Boot Guide",
-                "url":"https://abhishekmalvadkar.netlify.app/tags/mysql/",
-                "tagIds":["01JJEBSXC40CSH697GCJ4MQRYP","01JJH0YBKJWSER0434BCF1QKAQ"]
+                    "title":"MySQL Learning",
+                    "url":"https://abhishekmalvadkar.netlify.app/tags/mysql/",
+                    "tagIds":["01JJEBSXC40CSH697GCJ4MQRYP","01JJH0YBKJWSER0434BCF1QKAQ"]
                 }
                 """;
 
@@ -92,5 +91,6 @@ class LinkRestControllerTest extends AbstractIT {
         assertThat(code).isEqualTo(409);
 
         Object data = response.path("data");
+        assertThat(data).isNull();
     }
 }
