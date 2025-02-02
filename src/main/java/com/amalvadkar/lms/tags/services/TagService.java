@@ -8,6 +8,7 @@ import com.amalvadkar.lms.common.repositories.HeaderConfigRepo;
 import com.amalvadkar.lms.common.repositories.UserRepo;
 import com.amalvadkar.lms.tags.dao.TagDao;
 import com.amalvadkar.lms.tags.entities.TagEntity;
+import com.amalvadkar.lms.tags.models.dto.TagUpdateDto;
 import com.amalvadkar.lms.tags.models.request.CreateTagRequest;
 import com.amalvadkar.lms.tags.models.request.DeleteTagRequest;
 import com.amalvadkar.lms.tags.models.request.FetchTagsRequest;
@@ -104,9 +105,34 @@ public class TagService {
 
     @Transactional
     public CustomResponse updateTag(UpdateTagRequest updateTagRequest, String loggedInUserId) {
-        HeaderConfigEntity headerConfigEntity = headerConfigRepo.fetchHeaderConfigById(updateTagRequest.headerConfigId());
-        String value = TagTransformer.transformTag(updateTagRequest.value());
-        return  tagDao.updateTag(headerConfigEntity.getHeaderName(),value,headerConfigEntity.getMappingTable(),loggedInUserId,updateTagRequest.tagId());
+        String headerConfigId = updateTagRequest.headerConfigId();
+        HeaderConfigEntity headerConfigEntity = headerConfigRepo.fetchHeaderConfig(headerConfigId);
+        TagUpdateDto tagUpdateDto = prepareTagUpdateDto(updateTagRequest, loggedInUserId, headerConfigEntity);
+        int updatedTagCount = tagDao.updateTag(tagUpdateDto);
+        log.debug("Updated tag count :: {}", updatedTagCount);
+        return prepareUpdateTagResponse(tagUpdateDto);
+    }
 
+    private static CustomResponse prepareUpdateTagResponse(TagUpdateDto tagUpdateDto) {
+        return CustomResponse.success(
+                Map.of(TAG_ID, tagUpdateDto.tagId()),
+                UPDATED_SUCCESSFULLY_MSG.value());
+    }
+
+    private static TagUpdateDto prepareTagUpdateDto(UpdateTagRequest updateTagRequest, String loggedInUserId, HeaderConfigEntity headerConfigEntity) {
+        Object value = prepareValue(updateTagRequest, headerConfigEntity);
+        return new TagUpdateDto(headerConfigEntity.getMappingTable(),
+                headerConfigEntity.getMappingColumn(),
+                value,
+                updateTagRequest.tagId(),
+                loggedInUserId);
+    }
+
+    private static Object prepareValue(UpdateTagRequest updateTagRequest, HeaderConfigEntity headerConfigEntity) {
+        Object value = updateTagRequest.value();
+        if ("name".equals(headerConfigEntity.getMappingColumn())){
+            value = TagTransformer.transformTag(updateTagRequest.value());
+        }
+        return value;
     }
 }

@@ -18,8 +18,10 @@ import static com.amalvadkar.lms.common.constants.RequestHeaderConstant.REQUEST_
 @RequiredArgsConstructor
 public class TagRestController {
 
-    private static final String ENDPOINT_DELETE_TAG = "/delete-tag";
     private static final String ENDPOINT_CREATE_TAG = "/create-tag";
+    private static final String ENDPOINT_UPDATE_TAG = "/update-tag";
+    private static final String ENDPOINT_DELETE_TAG = "/delete-tag";
+    private static final String ENDPOINT_FETCH_TAGS = "/fetch-tags";
 
     private final TagService tagService;
 
@@ -36,12 +38,12 @@ public class TagRestController {
       return ResponseEntity.ok(this.tagService.deleteTag(deleteTagRequest, loggedInUserId));
     }
 
-    @PostMapping("fetch-tags")
+    @PostMapping(ENDPOINT_FETCH_TAGS)
     public ResponseEntity<CustomResponse> fetchTags(@RequestBody FetchTagsRequest fetchTagsRequest,
                                                     @RequestHeader(REQUEST_HEADER_USER_ID) String loggedInUserId){
         return ResponseEntity.ok(this.tagService.fetchTags(fetchTagsRequest, loggedInUserId));
     }
-    @PatchMapping("update-tag")
+    @PatchMapping(ENDPOINT_UPDATE_TAG)
     public ResponseEntity<CustomResponse> updateTag(@RequestBody UpdateTagRequest updateTagRequest,
                                                     @RequestHeader(REQUEST_HEADER_USER_ID) String loggedInUserId){
         return ResponseEntity.ok(this.tagService.updateTag(updateTagRequest, loggedInUserId));
