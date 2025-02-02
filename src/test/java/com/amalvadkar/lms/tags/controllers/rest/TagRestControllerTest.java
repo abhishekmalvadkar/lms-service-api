@@ -16,7 +16,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@Sql("/scripts/tags/tag-test-data.sql")
+@Sql("/scripts/tags/link-tag-test-data.sql")
 class TagRestControllerTest extends AbstractIT {
 
     @Autowired

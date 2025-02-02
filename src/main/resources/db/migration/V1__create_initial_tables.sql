@@ -68,18 +68,11 @@ CREATE TABLE links (
 
 -- LINK_TAGS TABLE
 CREATE TABLE link_tags (
-    id VARCHAR(40) PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     link_id VARCHAR(40) NOT NULL,
     tag_id VARCHAR(40) NOT NULL,
-    delete_flag BIT(1) NOT NULL DEFAULT 0,
-    created_on DATETIME NOT NULL,
-    created_by VARCHAR(40) NOT NULL,
-    updated_on DATETIME NOT NULL,
-    updated_by VARCHAR(40) NOT NULL,
     FOREIGN KEY (link_id) REFERENCES links(id),
-    FOREIGN KEY (tag_id) REFERENCES tags(id),
-    FOREIGN KEY (created_by) REFERENCES users(id),
-    FOREIGN KEY (updated_by) REFERENCES users(id)
+    FOREIGN KEY (tag_id) REFERENCES tags(id)
 );
 
 -- HEADER_CONFIG TABLE

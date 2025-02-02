@@ -7,7 +7,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface TagRepo extends JpaRepository<TagEntity, String> , JpaSpecificationExecutor<TagEntity> {
 
@@ -29,5 +31,11 @@ public interface TagRepo extends JpaRepository<TagEntity, String> , JpaSpecifica
             where t.id = :tagId
             """)
     Optional<TagEntity> findTagWithUser(@Param("tagId") String tagId);
+
+    @Query("""
+            SELECT t FROM TagEntity t
+             WHERE t.id IN :tagIds AND t.deleteFlag = false
+            """)
+    List<TagEntity> findTagsByIds(@Param("tagIds") Set<String> tagIds);
 
 }
