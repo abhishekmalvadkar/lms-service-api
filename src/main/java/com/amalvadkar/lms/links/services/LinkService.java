@@ -1,10 +1,12 @@
 package com.amalvadkar.lms.links.services;
 
+import com.amalvadkar.lms.common.enums.ResponseMessageEnum;
 import com.amalvadkar.lms.common.exceptions.ResourceAlreadyExistsException;
 import com.amalvadkar.lms.common.models.response.CustomResponse;
 import com.amalvadkar.lms.common.repositories.UserRepo;
 import com.amalvadkar.lms.links.entities.LinkEntity;
 import com.amalvadkar.lms.links.models.request.CreateLinkRequest;
+import com.amalvadkar.lms.links.models.request.DeleteLinkRequest;
 import com.amalvadkar.lms.links.repositories.LinkRepo;
 import com.amalvadkar.lms.tags.entities.TagEntity;
 import com.amalvadkar.lms.tags.repositories.TagRepo;
@@ -67,4 +69,10 @@ public class LinkService {
         return linkEntity;
     }
 
+    public CustomResponse deleteLink(DeleteLinkRequest deleteLinkRequest, String loggedInUserId) {
+        int  noOfLinkDeleted = linkRepo.deleteLink(deleteLinkRequest.linkId(), loggedInUserId);
+        log.info("no of link deleted : {}", noOfLinkDeleted);
+       return CustomResponse.deleted(ResponseMessageEnum.DELETED_SUCCESSFULLY_MSG.value());
+    }
 }
+

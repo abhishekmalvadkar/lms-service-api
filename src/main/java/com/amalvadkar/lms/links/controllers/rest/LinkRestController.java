@@ -4,6 +4,7 @@ package com.amalvadkar.lms.links.controllers.rest;
 import com.amalvadkar.lms.common.constants.RequestHeaderConstant;
 import com.amalvadkar.lms.common.models.response.CustomResponse;
 import com.amalvadkar.lms.links.models.request.CreateLinkRequest;
+import com.amalvadkar.lms.links.models.request.DeleteLinkRequest;
 import com.amalvadkar.lms.links.services.LinkService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class LinkRestController {
 
     public static final String ENDPOINT_CREATE_LINK = "/create-link";
+    public static final String ENDPOINT_DELETE_LINK = "/delete_link";
 
     private final LinkService linkService;
 
@@ -23,5 +25,12 @@ public class LinkRestController {
                                                      @RequestHeader(RequestHeaderConstant.REQUEST_HEADER_USER_ID) String loggedInUserId) {
        return ResponseEntity.ok(this.linkService.createLink(createLinkRequest, loggedInUserId));
     }
+
+    @PostMapping(ENDPOINT_DELETE_LINK)
+    public ResponseEntity<CustomResponse> deleteLink(@RequestBody DeleteLinkRequest deleteLinkRequest,
+                                                     @RequestHeader(RequestHeaderConstant.REQUEST_HEADER_USER_ID) String loggedInUserId) {
+        return ResponseEntity.ok(this.linkService.deleteLink(deleteLinkRequest, loggedInUserId));
+    }
+
 
 }

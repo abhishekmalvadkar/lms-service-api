@@ -93,4 +93,41 @@ class LinkRestControllerTest extends AbstractIT {
         Object data = response.path("data");
         assertThat(data).isNull();
     }
+
+    public void should_delete_link_by_id(){
+        String requestPayLoad =
+                """
+                     {
+                       linkId = "01JK2EXA0HTDGHG78YMSSB35Z2"
+                     }
+                """ ;
+
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .header("X-User-Id", "01JHCWNZ8TJT54N2XW130WDS8K")
+                .header("X-Role-Id", "01JHCWEFS3D4YMWYGRAMX8FZT1")
+                .header("X-Device", "web")
+                .body(requestPayLoad)
+                .when()
+                .post("api/lms/links/delete-link")
+                .then()
+                .extract()
+                .response();
+
+        boolean success = response.path("success");
+        assertThat(success).isFalse();
+
+        String message = response.path("message");
+        assertThat(message).isEqualTo("Deleted successfully");
+
+        int code = response.path("code");
+        assertThat(code).isEqualTo(204);
+
+        LinkEntity link = linkRepo.findById("01JK2EXA0HTDGHG78YMSSB35Z2").get();
+
+        assertThat(link.getDeleteFlag()).isTrue();
+        assertThat(link.getUpdatedOn()).isAfter(link.getCreatedOn());
+
+    }
+
 }
