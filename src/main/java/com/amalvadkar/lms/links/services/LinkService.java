@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.amalvadkar.lms.common.enums.ResponseMessageEnum.*;
-import static com.amalvadkar.lms.links.LinkErrorMessageEnum.LINK_ALREADY_EXISTS_ERR_MSG;
+import static com.amalvadkar.lms.links.enums.LinkErrorMessageEnum.LINK_ALREADY_EXISTS_ERR_MSG;
 
 @Service
 @RequiredArgsConstructor

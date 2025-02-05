@@ -1,4 +1,4 @@
-package com.amalvadkar.lms.links;
+package com.amalvadkar.lms.links.enums;
 
 import lombok.RequiredArgsConstructor;
 
