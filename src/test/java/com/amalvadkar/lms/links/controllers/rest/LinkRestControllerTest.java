@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.List;
+
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -130,4 +132,92 @@ class LinkRestControllerTest extends AbstractIT {
 
     }
 
+    @Test
+    public void fetch_links_by_searchText() {
+        String requestPayLoad =
+                """
+                             {
+                               "pagNo": 1,
+                               "searchText" : "Spring"
+                             }
+                        """;
+
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .header("X-User-Id", "01JHCWNZ8TJT54N2XW130WDS8K")
+                .header("X-Role-Id", "01JHCWEFS3D4YMWYGRAMX8FZT1")
+                .header("X-Device", "web")
+                .body(requestPayLoad)
+                .when()
+                .post("api/lms/links/fetch-links")
+                .then()
+                .extract()
+                .response();
+
+        boolean success = response.path("success");
+        assertThat(success).isTrue();
+
+        String message = response.path("message");
+        assertThat(message).isEqualTo("Fetched successfully");
+
+        int code = response.path("code");
+        assertThat(code).isEqualTo(200);
+
+        List<Object>  content = response.path("data.content");
+        assertThat(content).hasSize(2);
+
+        String linkId = response.path("data.content[0].linkId");
+        assertThat(linkId).isEqualTo("01JK3S9WCAY4X5D04VHKAZDWC7");
+
+        String tagName  = response.path("data.content[0].tags[0].tagName");
+        assertThat(tagName).isEqualTo("spring-boot");
+
+        Integer totalElement = response.path("data.totalElements");
+             assertThat(totalElement).isEqualTo(3);
+    }
+
+    @Test
+    public void fetch_links_by_tag() {
+        String requestPayLoad =
+                """
+                             {
+                               "pagNo": 1,
+                               "tagId" : "01JJEBSXC40CSH697GCJ4MQRYP"
+                             }
+                        """;
+
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .header("X-User-Id", "01JHCWNZ8TJT54N2XW130WDS8K")
+                .header("X-Role-Id", "01JHCWEFS3D4YMWYGRAMX8FZT1")
+                .header("X-Device", "web")
+                .body(requestPayLoad)
+                .when()
+                .post("api/lms/links/fetch-links")
+                .then()
+                .extract()
+                .response();
+
+        boolean success = response.path("success");
+        assertThat(success).isTrue();
+
+        String message = response.path("message");
+        assertThat(message).isEqualTo("Fetched successfully");
+
+        int code = response.path("code");
+        assertThat(code).isEqualTo(200);
+
+        List<Object>  content = response.path("data.content");
+        assertThat(content).hasSize(2);
+
+        String linkId = response.path("data.content[0].linkId");
+        assertThat(linkId).isEqualTo("01JK3S9WCAY4X5D04VHKAZDWC7");
+
+        String tagName  = response.path("data.content[0].tags[0].tagName");
+        assertThat(tagName).isEqualTo("spring-boot");
+
+        Integer totalElement = response.path("data.totalElements");
+        assertThat(totalElement).isEqualTo(3);
+    }
 }
+

@@ -2,13 +2,14 @@ package com.amalvadkar.lms.links.repositories;
 
 import com.amalvadkar.lms.links.entities.LinkEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface LinkRepo extends JpaRepository<LinkEntity, String> {
+public interface LinkRepo extends JpaRepository<LinkEntity, String> , JpaSpecificationExecutor<LinkEntity> {
 
     @Query("""
             select l from LinkEntity l
