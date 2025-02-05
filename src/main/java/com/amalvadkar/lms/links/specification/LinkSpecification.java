@@ -25,13 +25,19 @@ public class LinkSpecification {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
+            // Only apply fetch if the query is retrieving entities (not count)
+            if (!Long.class.equals(query.getResultType())) {
+                root.fetch(TAGS, JoinType.INNER);
+            }
+
             if (StringUtils.hasText(fetchLinkRequest.getSearchText())){
                 predicates.add(criteriaBuilder.like(root.get(TITLE), "%" + fetchLinkRequest.getSearchText() + "%"));
             }
 
             if(StringUtils.hasText(fetchLinkRequest.getTagId())){
-                Join<LinkEntity,TagEntity> tagJoin = root.join(TAGS, JoinType.INNER);
-                predicates.add(criteriaBuilder.equal(tagJoin.get(ID), fetchLinkRequest.getTagId()));
+                // Use a separate JOIN (without fetch) for filtering
+                Join<LinkEntity, TagEntity> joinTags = root.join(TAGS, JoinType.INNER);
+                predicates.add(criteriaBuilder.equal(joinTags.get(ID), fetchLinkRequest.getTagId()));
             }
 
             predicates.add(criteriaBuilder.equal(root.get(CREATED_BY).get(ID), loggedInUserId));
