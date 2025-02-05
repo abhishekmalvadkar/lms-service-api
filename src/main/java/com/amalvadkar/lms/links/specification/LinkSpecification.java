@@ -15,8 +15,10 @@ import java.util.List;
 public class LinkSpecification {
 
     public static final String CREATED_BY = "createdBy";
-
-    public static final String  DELETE_FLAG = "deleteFlag";
+    public static final String DELETE_FLAG = "deleteFlag";
+    public static final String TITLE = "title";
+    public static final String TAGS = "tags";
+    public static final String ID = "id";
 
 
     public static Specification<LinkEntity> getLink(FetchLinkRequest fetchLinkRequest, String loggedInUserId){
@@ -24,15 +26,15 @@ public class LinkSpecification {
             List<Predicate> predicates = new ArrayList<>();
 
             if (StringUtils.hasText(fetchLinkRequest.getSearchText())){
-                predicates.add(criteriaBuilder.like(root.get("title"), "%" + fetchLinkRequest.getSearchText() + "%"));
+                predicates.add(criteriaBuilder.like(root.get(TITLE), "%" + fetchLinkRequest.getSearchText() + "%"));
             }
 
             if(StringUtils.hasText(fetchLinkRequest.getTagId())){
-                Join<LinkEntity,TagEntity> tagJoin = root.join("tags", JoinType.INNER);
-                predicates.add(criteriaBuilder.equal(tagJoin.get("id"), fetchLinkRequest.getTagId()));
+                Join<LinkEntity,TagEntity> tagJoin = root.join(TAGS, JoinType.INNER);
+                predicates.add(criteriaBuilder.equal(tagJoin.get(ID), fetchLinkRequest.getTagId()));
             }
 
-            predicates.add(criteriaBuilder.equal(root.get(CREATED_BY).get("id"), loggedInUserId));
+            predicates.add(criteriaBuilder.equal(root.get(CREATED_BY).get(ID), loggedInUserId));
             predicates.add(criteriaBuilder.equal(root.get(DELETE_FLAG) , false));
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
