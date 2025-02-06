@@ -4,6 +4,5 @@ public record UpdateTagRequest(
         String headerConfigId,
         String value,
         String tagId
-
 ) {
 }
