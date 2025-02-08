@@ -6,7 +6,7 @@ import com.tngtech.archunit.core.importer.ImportOption;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noFields;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*;
 
 public class ArchUnitTest {
 
@@ -20,6 +20,26 @@ public class ArchUnitTest {
                 .beAnnotatedWith(Autowired.class)
                 .because("We agreed on constructor injection as recommend approach")
                 .check(importedClasses);
+    }
+
+    @Test
+    void should_not_use_junit4_classes() {
+        JavaClasses classes = new ClassFileImporter().importPackages("com.amalvadkar.lms");
+
+        noClasses()
+                .should()
+                .accessClassesThat()
+                .resideInAnyPackage("org.junit")
+                .because("Tests should use Junit5 instead of Junit4")
+                .check(classes);
+
+        noMethods()
+                .should()
+                .beAnnotatedWith("org.junit.Test")
+                .orShould()
+                .beAnnotatedWith("org.junit.Ignore")
+                .because("Tests should use Junit5 instead of Junit4")
+                .check(classes);
     }
 
 }
