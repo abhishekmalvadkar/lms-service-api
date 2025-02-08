@@ -8,7 +8,7 @@ import java.util.Date;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
-public class LegacyClassUseArchUnitTest extends AbstractArchUnitTest {
+public class LegacyClassUsageArchUnitTest extends AbstractArchUnitTest {
 
     @Test
     void should_not_use_java_util_date(){
