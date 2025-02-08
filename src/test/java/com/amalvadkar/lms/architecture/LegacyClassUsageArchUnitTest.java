@@ -18,7 +18,7 @@ public class LegacyClassUsageArchUnitTest extends AbstractArchUnitTest {
                 .belongToAnyOf(Date.class)
                 .because("Use java.time.LocalDate or java.time.Instant instead of java.util.Date");
 
-        noDataLegacyClassUseRule.check(importedClassesWithTests);
+        noDataLegacyClassUseRule.check(importedClasses);
     }
 
 }
