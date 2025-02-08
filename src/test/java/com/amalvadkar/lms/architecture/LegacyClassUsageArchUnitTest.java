@@ -4,8 +4,6 @@ import com.amalvadkar.lms.common.AbstractArchUnitTest;
 import com.tngtech.archunit.lang.ArchRule;
 import org.junit.jupiter.api.Test;
 
-import java.util.Date;
-
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 public class LegacyClassUsageArchUnitTest extends AbstractArchUnitTest {
@@ -15,10 +13,10 @@ public class LegacyClassUsageArchUnitTest extends AbstractArchUnitTest {
         ArchRule noDataLegacyClassUseRule = noClasses()
                 .should()
                 .dependOnClassesThat()
-                .belongToAnyOf(Date.class)
+                .haveFullyQualifiedName("java.util.Date")
                 .because("Use java.time.LocalDate or java.time.Instant instead of java.util.Date");
 
-        noDataLegacyClassUseRule.check(importedClasses);
+        noDataLegacyClassUseRule.check(importedClassesWithTests);
     }
 
 }
