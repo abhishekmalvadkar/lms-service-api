@@ -20,9 +20,18 @@ public class LinkEntity extends BaseEntity {
     @Column(name="url",nullable = false)
     private String url;
 
+    @Column(name="view_count")
+    private Long viewCount;
+
     @ManyToMany(fetch  = FetchType.LAZY)
     @JoinTable(name = "link_tags",
             joinColumns = @JoinColumn(name = "link_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     List<TagEntity> tags;
+
+
+    @PrePersist
+    public void preLinkPersist() {
+     this.viewCount = 0L;
+    }
 }
