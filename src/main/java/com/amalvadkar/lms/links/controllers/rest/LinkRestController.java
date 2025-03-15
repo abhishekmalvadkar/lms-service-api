@@ -27,7 +27,7 @@ public class LinkRestController {
     @PostMapping(ENDPOINT_CREATE_LINK)
     public ResponseEntity<CustomResponse> createLink(@RequestBody CreateLinkRequest createLinkRequest,
                                                      @RequestHeader(RequestHeaderConstant.REQUEST_HEADER_USER_ID) String loggedInUserId) {
-       return ResponseEntity.ok(this.linkService.createLink(createLinkRequest, loggedInUserId));
+        return ResponseEntity.ok(this.linkService.createLink(createLinkRequest, loggedInUserId));
     }
 
     @PostMapping(ENDPOINT_DELETE_LINK)
