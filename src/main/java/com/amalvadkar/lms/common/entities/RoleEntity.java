@@ -17,4 +17,7 @@ public class RoleEntity extends BaseEntity{
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "active", nullable = false)
+    private Boolean active;
 }

@@ -1,9 +1,10 @@
 -- USERS TABLE
 CREATE TABLE users (
     id VARCHAR(40) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT null,
     email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
+    verification_token VARCHAR(255),
     last_login_time DATETIME NULL,
     active BIT(1) NOT NULL DEFAULT 1,
     delete_flag BIT(1) NOT NULL DEFAULT 0,
@@ -19,6 +20,7 @@ CREATE TABLE roles (
     id VARCHAR(40) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description VARCHAR(500) NULL,
+    active BIT(1) NOT NULL DEFAULT 1,
     delete_flag BIT(1) NOT NULL DEFAULT 0,
     created_on DATETIME NOT NULL,
     created_by VARCHAR(40) NULL,
@@ -102,9 +104,9 @@ VALUES
 
 
 -- INSERT SYSTEM USER
-INSERT INTO users (id, name, email, password, last_login_time, active, delete_flag, created_on, created_by, updated_on, updated_by, role_id)
+INSERT INTO users (id, first_name,last_name, email, last_login_time, active, delete_flag, created_on, created_by, updated_on, updated_by, role_id)
 VALUES
-    ('01JHCWNZ8TJT54N2XW130WDS8K', 'System', 'system@example.com', 'securepasswordhash', NULL, 1, 0, UTC_TIMESTAMP(), NULL, UTC_TIMESTAMP(), NULL, '01JHCWEFS3D4YMWYGRAMX8FZT1');
+    ('01JHCWNZ8TJT54N2XW130WDS8K', 'System', 'Account','system@example.com', NULL, 1, 0, UTC_TIMESTAMP(), NULL, UTC_TIMESTAMP(), NULL, '01JHCWEFS3D4YMWYGRAMX8FZT1');
 
 
 -- INSERT HEADER CONFIG DATA
