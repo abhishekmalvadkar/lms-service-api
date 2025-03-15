@@ -2,7 +2,14 @@ package com.amalvadkar.lms.links.entities;
 
 import com.amalvadkar.lms.common.entities.BaseEntity;
 import com.amalvadkar.lms.tags.entities.TagEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
