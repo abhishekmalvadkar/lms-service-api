@@ -8,6 +8,7 @@ import com.amalvadkar.lms.links.entities.LinkEntity;
 import com.amalvadkar.lms.links.models.request.CreateLinkRequest;
 import com.amalvadkar.lms.links.models.request.DeleteLinkRequest;
 import com.amalvadkar.lms.links.models.request.FetchLinkRequest;
+import com.amalvadkar.lms.links.models.request.ViewLinkRequest;
 import com.amalvadkar.lms.links.models.response.FetchLinkResponse;
 import com.amalvadkar.lms.links.repositories.LinkRepo;
 import com.amalvadkar.lms.links.specification.LinkSpecification;
@@ -74,6 +75,7 @@ public class LinkService {
         return linkEntity;
     }
 
+    @Transactional
     public CustomResponse deleteLink(DeleteLinkRequest deleteLinkRequest, String loggedInUserId) {
         int noOfLinkDeleted = linkRepo.deleteLink(deleteLinkRequest.linkId(), loggedInUserId);
         log.info("no of link deleted : {}", noOfLinkDeleted);
@@ -98,6 +100,14 @@ public class LinkService {
         Pageable pageable = fetchLinkRequest.preparePageRequest();
         var linkEntitySpecification = LinkSpecification.getLink(fetchLinkRequest, loggedInUserId);
         return linkRepo.findAll(linkEntitySpecification, pageable);
+    }
+
+    @Transactional
+    public CustomResponse viewLink(ViewLinkRequest viewLinkRequest, String loggedInUserId) {
+        int updatedRowCount = linkRepo.updateViewCount(viewLinkRequest.linkId(), loggedInUserId);
+        log.info("no of rows updated = {} ", updatedRowCount);
+        String linkUrl = linkRepo.fetchLinkUrl(viewLinkRequest);
+        return CustomResponse.success(linkUrl, "Viewed  successfully");
     }
 
 }

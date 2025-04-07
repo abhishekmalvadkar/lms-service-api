@@ -55,9 +55,13 @@ class LinkRestControllerTest extends AbstractIT {
         String newCreatedLinkId = response.path("data.linkId");
 
         LinkEntity createdLink = linkRepo.findLinkWithTagsWithUser(newCreatedLinkId,
-                        "01JHCWNZ8TJT54N2XW130WDS8K").orElseThrow();
+                "01JHCWNZ8TJT54N2XW130WDS8K").orElseThrow();
         assertThat(createdLink.getTitle()).isEqualTo("Spring Boot Guide");
         assertThat(createdLink.getTags()).hasSize(2);
+        assertThat(createdLink.getViewCount()).isZero()
+
+        ;
+
     }
 
     @Test
@@ -96,13 +100,13 @@ class LinkRestControllerTest extends AbstractIT {
         assertThat(data).isNull();
     }
 
-    public void should_delete_link_by_id(){
+    public void should_delete_link_by_id() {
         String requestPayLoad =
                 """
-                     {
-                       linkId = "01JK2EXA0HTDGHG78YMSSB35Z2"
-                     }
-                """ ;
+                             {
+                               linkId = "01JK2EXA0HTDGHG78YMSSB35Z2"
+                             }
+                        """;
 
         Response response = given()
                 .contentType(ContentType.JSON)
@@ -163,17 +167,17 @@ class LinkRestControllerTest extends AbstractIT {
         int code = response.path("code");
         assertThat(code).isEqualTo(200);
 
-        List<Object>  content = response.path("data.content");
+        List<Object> content = response.path("data.content");
         assertThat(content).hasSize(2);
 
         String linkId = response.path("data.content[0].linkId");
         assertThat(linkId).isEqualTo("01JK3S9WCAY4X5D04VHKAZDWC7");
 
-        String tagName  = response.path("data.content[0].tags[0].tagName");
+        String tagName = response.path("data.content[0].tags[0].tagName");
         assertThat(tagName).isEqualTo("spring-boot");
 
         Integer totalElement = response.path("data.totalElements");
-             assertThat(totalElement).isEqualTo(3);
+        assertThat(totalElement).isEqualTo(3);
     }
 
     @Test
@@ -207,17 +211,55 @@ class LinkRestControllerTest extends AbstractIT {
         int code = response.path("code");
         assertThat(code).isEqualTo(200);
 
-        List<Object>  content = response.path("data.content");
+        List<Object> content = response.path("data.content");
         assertThat(content).hasSize(2);
 
         String linkId = response.path("data.content[0].linkId");
         assertThat(linkId).isEqualTo("01JK3S9WCAY4X5D04VHKAZDWC7");
 
-        String tagName  = response.path("data.content[0].tags[0].tagName");
+        String tagName = response.path("data.content[0].tags[0].tagName");
         assertThat(tagName).isEqualTo("spring-boot");
 
         Integer totalElement = response.path("data.totalElements");
         assertThat(totalElement).isEqualTo(3);
+    }
+
+    @Test
+    public void view_link_should_update_view_count_and__return_link_url() {
+        String requestPayLoad =
+                        """
+                             {
+                               "linkId":"01JK2EXA0HTDGHG78YMSSB35Z2"
+                             }
+                        """;
+
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .header("X-User-Id", "01JHCWNZ8TJT54N2XW130WDS8K")
+                .header("X-Role-Id", "01JHCWEFS3D4YMWYGRAMX8FZT1")
+                .header("X-Device", "web")
+                .body(requestPayLoad)
+                .when()
+                .post("api/lms/links/view-link")
+                .then()
+                .extract()
+                .response();
+
+        boolean success = response.path("success");
+        assertThat(success).isTrue();
+
+        String message = response.path("message");
+        assertThat(message).isEqualTo("Viewed  successfully");
+
+        int code = response.path("code");
+        assertThat(code).isEqualTo(200);
+
+        String url = response.path("data");
+        assertThat(url).isEqualTo("https://abhishekmalvadkar.netlify.app/tags/mysql/");
+
+        LinkEntity updatedLinkEntity = linkRepo.findById("01JK2EXA0HTDGHG78YMSSB35Z2").orElseThrow();
+        assertThat(updatedLinkEntity.getViewCount()).isEqualTo(1L);
+
     }
 }
 
